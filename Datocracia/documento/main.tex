@@ -1,0 +1,350 @@
+% !TEX program = xelatex
+% =============================================================================
+%  DOCUMENTO TÉCNICO · Reto 1 · Perfiles ciudadanos de participación
+%  Hackea la Participación: Datos que construyen democracia (INE)
+%
+%  Requisitos de las bases: 8 a 12 cuartillas, PDF, Arial/Calibri 11, interlineado 1.5.
+%  Compilar con XeLaTeX o LuaLaTeX (en Overleaf: Menú > Compiler > XeLaTeX).
+%
+%  Flujo de trabajo:
+%    1) Corre los notebooks 01-04.
+%    2) Desde esta carpeta:  python generar_tablas_latex.py   (llena tablas y valores)
+%    3) Redacta las secciones marcadas con [PENDIENTE: ...] (salen en rojo).
+%    4) Cuando termines, cambia \guiatrue por \guiafalse para ocultar las cajas morado-claro
+%       de guía y verifica el número de páginas (8 a 12).
+% =============================================================================
+\documentclass[11pt,letterpaper]{article}
+
+% ------------------------------- Interruptor de guía -------------------------------
+\newif\ifguia
+\guiatrue          % <-- cambia a \guiafalse para la versión final
+
+% ------------------------------- Datos de portada ----------------------------------
+\newcommand{\titulodoc}{Perfiles ciudadanos de participaci\'on electoral en M\'exico, 2009--2024: una segmentaci\'on de datos agregados}
+\newcommand{\equipo}{[nombre del equipo]}
+\newcommand{\integrantes}{[Integrante 1; Integrante 2; \dots]}
+\newcommand{\repositorio}{[URL del repositorio]}
+
+% ------------------------------- Paquetes base -------------------------------------
+\usepackage{fontspec}
+% Babel en español: usa spanish.ldf si existe (TeX Live completo / Overleaf); si no, el
+% archivo de localización incluido en babel (útil en instalaciones mínimas).
+\IfFileExists{spanish.ldf}{%
+  \usepackage[spanish,es-tabla]{babel}\decimalpoint}{%
+  \usepackage{babel}\babelprovide[import,main]{spanish}}
+\AtBeginDocument{\renewcommand{\tablename}{Tabla}\renewcommand{\figurename}{Figura}}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{setspace}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage[table]{xcolor}
+\usepackage{booktabs,tabularx,array}
+\usepackage{caption}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{comment}
+\usepackage[most]{tcolorbox}
+\usepackage[hidelinks]{hyperref}
+
+% ------------------------------- Tipografía: Arial 11 ------------------------------
+% Si Arial no está instalada se usa Liberation Sans (idéntica en métricas) o TeX Gyre
+% Heros. Para usar Calibri: reemplaza por \setmainfont{Calibri} (o Carlito).
+\IfFontExistsTF{Arial}{\setmainfont{Arial}}{%
+  \IfFontExistsTF{Liberation Sans}{\setmainfont{Liberation Sans}}{\setmainfont{TeX Gyre Heros}}}
+\IfFontExistsTF{Courier New}{\setmonofont{Courier New}}{%
+  \IfFontExistsTF{Liberation Mono}{\setmonofont{Liberation Mono}}{\setmonofont{TeX Gyre Cursor}}}
+
+% Interlineado 1.5 (valor literal de \setstretch; conservador respecto de Word).
+\setstretch{1.5}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+\setlist{itemsep=1pt,topsep=2pt,parsep=0pt}
+\raggedbottom
+
+% Encabezados de sección compactos
+\titleformat{\section}{\large\bfseries}{\thesection.}{0.5em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{0.5em}{}
+\titlespacing*{\section}{0pt}{10pt}{2pt}
+\titlespacing*{\subsection}{0pt}{6pt}{0pt}
+
+\captionsetup{font={small,stretch=1},labelfont=bf,skip=3pt}
+\pagestyle{fancy}\fancyhf{}
+\fancyfoot[C]{\small\thepage}
+\renewcommand{\headrulewidth}{0pt}
+
+% ------------------------------- Colores y macros ----------------------------------
+\definecolor{moradoINE}{HTML}{5B2C83}
+
+% Texto pendiente (siempre visible, en rojo, para que no se te olvide nada)
+\newcommand{\pend}[1]{\textcolor{red}{[\textbf{PENDIENTE:} #1]}}
+
+% Caja de guía (solo aparece con \guiatrue)
+\ifguia
+  \newtcolorbox{guia}[1][Gu\'ia]{enhanced,breakable,colback=moradoINE!6,colframe=moradoINE!70,
+    boxrule=0.5pt,arc=2pt,left=4pt,right=4pt,top=2pt,bottom=2pt,
+    title=#1,fonttitle=\bfseries\footnotesize,fontupper=\footnotesize\singlespacing}
+\else
+  \excludecomment{guia}
+\fi
+
+% Valores generados por generar_tablas_latex.py: \valor{perfil}{campo}
+\IfFileExists{valores_perfiles.tex}{\input{valores_perfiles.tex}}{}
+\newcommand{\valor}[2]{\ifcsname val@#1@#2\endcsname\csname val@#1@#2\endcsname\else\pend{#1/#2}\fi}
+
+% Figura que no rompe la compilación si el archivo aún no existe
+\newcommand{\rutafig}{../outputs/figuras/}
+\newcommand{\figura}[4][0.95]{% [ancho] {archivo} {pie} {etiqueta}
+  \begin{figure}[htbp]\centering
+    \IfFileExists{\rutafig #2}{\includegraphics[width=#1\textwidth]{\rutafig #2}}%
+    {\fbox{\parbox{0.8\textwidth}{\centering\singlespacing\small\pend{figura \texttt{\detokenize{#2}}; corre los notebooks}}}}
+    \caption{#3}\label{#4}
+  \end{figure}}
+
+% Tabla incluida desde archivo generado
+\newcommand{\tablaarchivo}[3]{% {archivo} {pie} {etiqueta}
+  \begin{table}[htbp]\centering\small\singlespacing
+    \IfFileExists{tablas/#1}{\input{tablas/#1}}{\pend{tabla \texttt{\detokenize{#1}}; ejecuta generar\_tablas\_latex.py}}
+    \caption{#2}\label{#3}
+  \end{table}}
+
+% Indicadores clave de un perfil
+\newcommand{\indicadores}[1]{%
+  {\small\singlespacing\noindent
+  \begin{tabularx}{\textwidth}{@{}*{5}{>{\centering\arraybackslash}X}@{}}
+    \toprule
+    \% de la lista nominal & Participaci\'on media (\%) & Brecha pres.--interm. (pp) & Tendencia (pp/elecci\'on) & Volatilidad (pp)\\
+    \midrule
+    \valor{#1}{pct} & \valor{#1}{media} & \valor{#1}{brecha} & \valor{#1}{tend} & \valor{#1}{vol}\\
+    \bottomrule
+  \end{tabularx}}\par\vspace{2pt}}
+
+% Encabezado de perfil
+\newcommand{\perfil}[2]{\subsection{Perfil #1: #2}\indicadores{#1}}
+
+% =============================================================================
+\begin{document}
+
+% ------------------------------- Encabezado ----------------------------------------
+\begin{center}
+  {\Large\bfseries\color{moradoINE}\titulodoc\par}
+  \vspace{2pt}
+  {\small\singlespacing Hackea la Participaci\'on: Datos que construyen democracia \textperiodcentered{} Reto~1: Perfiles ciudadanos de participaci\'on\par}
+  {\small\singlespacing \textbf{Equipo:} \equipo\ \textperiodcentered{} \textbf{Integrantes:} \integrantes\par}
+  {\small\singlespacing Repositorio de c\'odigo: \repositorio\ \textperiodcentered{} Octubre de 2026\par}
+\end{center}
+\vspace{-4pt}
+
+\begin{guia}[Presupuesto de cuartillas (total objetivo: 11.5 de un m\'aximo de 12)]
+Las bases piden 8 a 12 cuartillas con Arial/Calibri 11 e interlineado 1.5. Esta plantilla cumple ese formato; lo que debes vigilar es el largo. Presupuesto sugerido (incluye figuras y tablas):\\[2pt]
+\begin{tabular}{@{}lr@{\hspace{2em}}lr@{}}
+Resumen ejecutivo & 0.5 & Estrategias diferenciadas & 1.25\\
+1. Introducci\'on & 0.75 & 7. Limitaciones y \'etica & 0.5\\
+2. Datos & 1.0 & 8. Conclusiones & 0.5\\
+3. Metodolog\'ia & 2.25 & Referencias & 0.5\\
+4. Resultados de la segmentaci\'on & 1.25 & \textbf{Total} & \textbf{11.5}\\
+5. Perfiles ciudadanos (4 a 6) & 3.0 & & \\
+\end{tabular}\\[2pt]
+Las partes en rojo \textcolor{red}{[PENDIENTE: \dots]} son las que debes redactar o confirmar. La Secci\'on~3 ya viene redactada porque describe el c\'odigo del proyecto: rev\'isala y ajusta los par\'ametros que cambies. Con \verb|\guiafalse| desaparecen todas estas cajas.
+\end{guia}
+
+% ------------------------------- Resumen ------------------------------------------
+\section*{Resumen ejecutivo}
+\begin{guia}
+M\'aximo 180 palabras, sin referencias. Cuatro ideas en este orden: (1) problema y pregunta gu\'ia; (2) datos y m\'etodo en una frase; (3) los hallazgos: cu\'antos perfiles, cu\'al es el m\'as grande, cu\'al el de mayor oportunidad; (4) qu\'e puede hacer el INE con esto. Escr\'ibelo \emph{al final}, cuando ya tengas los resultados.
+\end{guia}
+\pend{Resumen de 150--180 palabras: problema, datos y m\'etodo, hallazgos principales (n\'umero de perfiles y su peso), implicaci\'on para el dise\~no de campa\~nas.}
+
+% ------------------------------- 1. Introducción ------------------------------------
+\section{Introducci\'on}
+\begin{guia}
+Pregunta gu\'ia de las bases: \emph{\textquestiondown Qu\'e tipos de ciudadan\'ia existen seg\'un su comportamiento de participaci\'on?} Utilidad para el INE: dise\~no de campa\~nas focalizadas y mensajes diferenciados por perfil. Cierra con una frase que anuncie la estructura del documento.
+\end{guia}
+La participaci\'on electoral no es homog\'enea: var\'ia con la edad, el sexo, el territorio y el tipo de elecci\'on. Este documento responde a la pregunta \emph{\textquestiondown qu\'e tipos de ciudadan\'ia existen seg\'un su comportamiento de participaci\'on?}\ mediante una segmentaci\'on (clustering) de los datos agregados de los Conteos Censales de Participaci\'on Ciudadana (CCPC) 2009--2024 del Instituto Nacional Electoral \cite{ine_ccpc}, con el prop\'osito de apoyar campa\~nas focalizadas y mensajes diferenciados por perfil \cite{ine_convocatoria}.
+
+\pend{P\'arrafo de contexto (1--2 frases): por qu\'e importa distinguir perfiles; dato o cita que motive el problema.}
+
+\textbf{Objetivo.} Identificar entre 4 y 6 perfiles ciudadanos claramente diferenciados, caracterizarlos con edad, sexo, tipo de secci\'on, regi\'on e historial de participaci\'on, y proponer una estrategia de fomento a la participaci\'on para cada uno.
+
+\textbf{Aportaci\'on.} \pend{2--3 frases: qu\'e aporta su an\'alisis frente a mirar promedios nacionales (p.\,ej. perfiles que se pierden en el promedio, brecha entre elecciones presidenciales e intermedias).}
+
+\textbf{Organizaci\'on.} La Secci\'on~2 describe los datos; la~3, la metodolog\'ia; la~4, la selecci\'on del n\'umero de perfiles; la~5, los perfiles; la~6, las estrategias; y las secciones~7 y~8 cierran con limitaciones y conclusiones.
+
+% ------------------------------- 2. Datos -----------------------------------------
+\section{Datos}
+\begin{guia}
+Describe la fuente con precisi\'on y sin exagerar. Reporta n\'umeros concretos tomados de la salida del notebook 01 y 02 (filas, segmentos, descartes). Debe quedar claro que \emph{solo se usaron datos agregados, sin datos personales}, como piden las bases.
+\end{guia}
+\subsection{Fuente y cobertura}
+Se utilizaron los datos agregados de la Plataforma CCPC 2009--2024 \cite{ine_ccpc}, que integra las bases censales de participaci\'on de las elecciones federales de 2009, 2012, 2015, 2018, 2021 y 2024 y permite consultarlas a distintos niveles territoriales \cite{ine_rector}. \pend{Confirmar con la documentaci\'on del INE: c\'omo se construye la base (marca de participaci\'on en listas nominales), niveles de desagregaci\'on disponibles y fecha de descarga.} No se emplearon datos personales.
+
+\subsection{Variables}
+\pend{Listar las variables realmente usadas tras revisar el archivo descargado: elecci\'on, entidad, distrito, tipo de secci\'on, sexo, grupo de edad, lista nominal y participantes. Indicar si la escolaridad est\'a disponible; si no, decirlo expl\'icitamente.}
+
+\subsection{Calidad y tratamiento}
+\pend{Reportar con n\'umeros: filas iniciales y finales; porcentaje descartado por cada regla (nulos, lista nominal $\le 0$, participantes $>$ lista nominal); segmentos finales; celdas imputadas (ver salidas de los notebooks 01 y 02).}
+
+% ------------------------------- 3. Metodología -----------------------------------
+\section{Metodolog\'ia}
+\begin{guia}
+Esta secci\'on ya est\'a escrita a partir del c\'odigo (notebooks 02 y 03). Revisa los par\'ametros en rojo y c\'ambialos si modificaste algo. Conserva la subsecci\'on de \emph{falacia ecol\'ogica}: suma rigor.
+\end{guia}
+
+\subsection{Unidad de an\'alisis y variables}
+La unidad de an\'alisis es un \emph{segmento} $s=(\text{entidad},\text{distrito},\text{tipo de secci\'on},\text{sexo},\text{grupo de edad})$. Para cada segmento $s$ y elecci\'on $e\in\{2009,2012,2015,2018,2021,2024\}$ se calcul\'o la tasa de participaci\'on
+\begin{equation}
+  \tau_{s,e}=\frac{P_{s,e}}{L_{s,e}},
+\end{equation}
+donde $P_{s,e}$ son las personas que participaron y $L_{s,e}$ la lista nominal del segmento. Las tasas nacionales y por grupo se obtienen sumando numeradores y denominadores, no promediando tasas. El vector $(\tau_{s,2009},\dots,\tau_{s,2024})$ es el \emph{historial de participaci\'on} del segmento y constituye el \'unico insumo del clustering; edad, sexo, tipo de secci\'on y regi\'on se reservan para caracterizar los grupos, de modo que los perfiles emerjan del comportamiento y no de la demograf\'ia.
+
+Para interpretar los perfiles se derivaron tres indicadores. Sean $\mathcal{P}$ y $\mathcal{I}$ las elecciones presidenciales (2012, 2018, 2024) e intermedias (2009, 2015, 2021). La \emph{brecha presidencial--intermedia} es
+\begin{equation}
+  B_s=\frac{1}{|\mathcal{P}|}\sum_{e\in\mathcal{P}}\tau_{s,e}-\frac{1}{|\mathcal{I}|}\sum_{e\in\mathcal{I}}\tau_{s,e},
+\end{equation}
+la \emph{volatilidad} es la desviaci\'on est\'andar de las seis tasas y la \emph{tendencia} es la pendiente $\beta_s$ de la regresi\'on lineal de $\tau_{s,e}$ sobre el \'indice de elecci\'on $t=1,\dots,6$ (pp por elecci\'on).
+
+\subsection{Preprocesamiento}
+Se descartaron los segmentos con lista nominal media menor a \pend{30} personas, porque sus tasas son ruido muestral. Se toleraron hasta \pend{2} elecciones sin dato por segmento; las faltantes se imputaron con la mediana del mismo grupo de edad y sexo. Las seis tasas se estandarizaron (puntaje~$z$)
+\begin{equation}
+  z_{s,e}=\frac{\tau_{s,e}-\mu_e}{\sigma_e},
+\end{equation}
+para que ninguna elecci\'on domine por escala.
+
+\subsection{Algoritmo de segmentaci\'on}
+Se emple\'o $k$-means ponderado \cite{macqueen1967,lloyd1982}, que minimiza
+\begin{equation}
+  \sum_{s} w_s\,\lVert \mathbf{z}_s-\mathbf{c}_{g(s)}\rVert^2,\qquad w_s\propto\sqrt{\bar L_s},
+\end{equation}
+con $\bar L_s$ la lista nominal media del segmento y $g(s)$ su grupo. La ra\'iz cuadrada evita que unos pocos segmentos muy grandes dominen (un segmento de 1,600 personas pesa el doble, no cuatro veces, que uno de 400). Se eligi\'o $k$-means por su interpretabilidad (cada centroide es una trayectoria de participaci\'on) y escalabilidad; se utilizaron 50 inicializaciones aleatorias y semilla fija (42), y los grupos se reordenaron por participaci\'on media creciente. Para verificar robustez se contrast\'o con mezclas gaussianas \cite{schwarz1978} y con agrupamiento jer\'arquico de Ward \cite{ward1963} sobre una submuestra de \pend{5,000} segmentos.
+
+\subsection{Selecci\'on del n\'umero de perfiles y validaci\'on}
+Las bases piden entre 4 y 6 perfiles. Se evaluaron $k=2,\dots,10$ con la silueta \cite{rousseeuw1987}, el \'indice de Calinski--Harabasz \cite{calinski1974}, el de Davies--Bouldin \cite{davies1979}, el BIC de la mezcla gaussiana \cite{schwarz1978} y el tama\~no del grupo menor (un grupo con menos de $\approx$1\% de los segmentos suele ser ruido). La \emph{estabilidad} se estim\'o con \pend{20} submuestras aleatorias del 80\% de los segmentos: en cada una se ajust\'o el modelo, se asign\'o a todos los segmentos y se compar\'o cada par de particiones con el \'indice de Rand ajustado (ARI) \cite{hubert1985}; un ARI promedio cercano a 1 indica que los grupos se reproducen \cite{hennig2007}. Entre los $k\in\{4,5,6\}$ con ARI promedio $\ge 0.8$ se tom\'o el de mayor silueta como punto de partida, y la decisi\'on final incorpor\'o la interpretabilidad de los perfiles. \pend{Indicar el $k$ elegido y la raz\'on, en una frase.}
+
+\subsection{Caracterizaci\'on, nombre de los perfiles y reproducibilidad}
+Las medias de cada perfil se ponderaron por tama\~no del segmento. La composici\'on se resume con un \'indice
+\begin{equation}
+  I_{g,c}=\frac{p_{g,c}}{p_{c}}\times 100,
+\end{equation}
+donde $p_{g,c}$ es el porcentaje de la lista nominal del perfil $g$ en la categor\'ia $c$ y $p_c$ el de toda la base; $I=150$ significa que la categor\'ia est\'a sobrerrepresentada 1.5 veces. Los nombres de los perfiles son narrativos y se apoyan en nivel de participaci\'on, brecha presidencial--intermedia y tendencia. El an\'alisis se implement\'o en Python con scikit-learn \cite{pedregosa2011}; el c\'odigo y los datos derivados est\'an en \repositorio.
+
+\subsection{Falacia ecol\'ogica}
+Los datos son agregados: los perfiles describen \emph{segmentos} (territorio $\times$ sexo $\times$ edad), no personas. Inferir que cada individuo de un segmento se comporta como el segmento incurre en la falacia ecol\'ogica \cite{robinson1950}. Adem\'as, el grupo de edad ``20--24'' de 2009 no est\'a formado por las mismas personas que el de 2024; el historial describe el comportamiento t\'ipico del segmento en cada elecci\'on, no trayectorias individuales.
+
+% ------------------------------- 4. Resultados de la segmentación -----------------
+\section{Resultados de la segmentaci\'on}
+\begin{guia}
+Presenta (a) la tabla de m\'etricas, (b) la justificaci\'on de $k$ y (c) la vista general de los perfiles con la figura de trayectorias. Tabla y figuras se llenan solas tras correr los notebooks y \texttt{generar\_tablas\_latex.py}. Las filas sombreadas son el rango permitido (4--6).
+\end{guia}
+\subsection{Elecci\'on del n\'umero de perfiles}
+La Tabla~\ref{tab:k} resume los criterios de selecci\'on. \pend{Interpretar en 4--6 l\'ineas: qu\'e $k$ gana en cada criterio, estabilidad, tama\~no m\'inimo de grupo y por qu\'e se eligi\'o el $k$ final; si hay conflicto entre m\'etricas, decirlo.}
+\tablaarchivo{tabla_k.tex}{Criterios de selecci\'on de $k$ (C-H: Calinski--Harabasz; D-B: Davies--Bouldin; ARI boot.: estabilidad por submuestreo). Filas sombreadas: rango pedido en las bases.}{tab:k}
+
+\subsection{Vista general de los perfiles}
+\pend{2--3 frases: cu\'antos perfiles, cu\'anto pesa cada uno en la lista nominal y qu\'e los separa m\'as (nivel general, selectividad presidencial, tendencia).}
+\figura[0.82]{trayectorias_perfiles.png}{Trayectoria de participaci\'on de cada perfil frente al promedio de la base (franjas: elecciones presidenciales).}{fig:tray}
+
+% ------------------------------- 5. Perfiles --------------------------------------
+\section{Perfiles ciudadanos}
+\begin{guia}
+Un bloque por perfil (el n\'umero depende de tu $k$: 4 a 6; borra o copia bloques). Cada bloque debe responder, en 6--9 l\'ineas: \textbf{qui\'en} es (edad, sexo, tipo de secci\'on, regi\'on, con los \'indices de composici\'on del notebook 04); \textbf{c\'omo participa} (nivel, patr\'on presidencial/intermedia, tendencia); \textbf{qu\'e lo distingue} de los dem\'as. El nombre debe ser narrativo y respetuoso (``Los constantes'', no ``Los apáticos''). Reemplaza la ficha preliminar por tu infograf\'ia final si ya la tienes. Ejemplo de lectura de un \'indice: edad ``J\'ovenes'' con $I=150$ $\Rightarrow$ 1.5 veces m\'as j\'ovenes que el promedio.
+\end{guia}
+\pend{Introducci\'on de 2 l\'ineas a la secci\'on: c\'omo leer los indicadores de cada perfil (brecha en puntos porcentuales; tendencia en pp por elecci\'on).}
+
+\perfil{0}{\pend{nombre narrativo}}
+\pend{Qui\'en es / c\'omo participa / qu\'e lo distingue (6--9 l\'ineas).}
+\figura[0.98]{ficha_perfil_0.png}{Ficha preliminar del perfil 0.}{fig:p0}
+
+\perfil{1}{\pend{nombre narrativo}}
+\pend{Qui\'en es / c\'omo participa / qu\'e lo distingue (6--9 l\'ineas).}
+
+\perfil{2}{\pend{nombre narrativo}}
+\pend{Qui\'en es / c\'omo participa / qu\'e lo distingue (6--9 l\'ineas).}
+
+\perfil{3}{\pend{nombre narrativo}}
+\pend{Qui\'en es / c\'omo participa / qu\'e lo distingue (6--9 l\'ineas).}
+
+\perfil{4}{\pend{nombre narrativo}}
+\pend{Qui\'en es / c\'omo participa / qu\'e lo distingue (6--9 l\'ineas).}
+
+\begin{guia}
+Las fichas de los dem\'as perfiles est\'an en \texttt{outputs/figuras/ficha\_perfil\_N.png}; incluye solo las que quepan en el presupuesto de p\'aginas. La tabla de trayectorias por perfil (\texttt{tabla\_perfiles.tex}) sirve como resumen compacto si prefieres no insertar todas las fichas.
+\end{guia}
+\tablaarchivo{tabla_perfiles.tex}{Participaci\'on (\%) por elecci\'on y peso en la lista nominal de cada perfil.}{tab:perfiles}
+
+% ------------------------------- 6. Estrategias -----------------------------------
+\section{Estrategias diferenciadas de fomento a la participaci\'on}
+\begin{guia}
+Una estrategia por perfil, \emph{derivada de la evidencia}, no gen\'erica. Estructura sugerida por fila: objetivo (qu\'e comportamiento cambiar), mensaje (idea central, con tono adecuado al perfil), canal y momento (d\'onde y cu\'ando; p.\,ej. antes de una elecci\'on intermedia, donde el perfil cae), indicador de \'exito (c\'omo se mide, p.\,ej. cerrar la brecha de $X$ pp en la siguiente intermedia). Ejemplo de l\'ogica: perfil con brecha presidencial--intermedia grande $\Rightarrow$ la estrategia debe explicar por qu\'e las elecciones intermedias tambi\'en importan y concentrarse en el periodo previo a la siguiente elecci\'on federal intermedia (verifica el calendario electoral).
+\end{guia}
+\pend{1--2 frases que expliquen el criterio general para pasar del perfil a la estrategia.}
+
+\begin{table}[htbp]\centering\footnotesize\singlespacing
+\renewcommand{\arraystretch}{1.25}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{1.7cm}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
+\toprule
+\textbf{Perfil} & \textbf{Objetivo} & \textbf{Mensaje} & \textbf{Canal y momento} & \textbf{Indicador}\\
+\midrule
+0 \pend{nombre} & \pend{} & \pend{} & \pend{} & \pend{}\\
+1 \pend{nombre} & \pend{} & \pend{} & \pend{} & \pend{}\\
+2 \pend{nombre} & \pend{} & \pend{} & \pend{} & \pend{}\\
+3 \pend{nombre} & \pend{} & \pend{} & \pend{} & \pend{}\\
+4 \pend{nombre} & \pend{} & \pend{} & \pend{} & \pend{}\\
+\bottomrule
+\end{tabularx}
+\caption{Estrategias diferenciadas por perfil.}\label{tab:estrategias}
+\end{table}
+
+% ------------------------------- 7. Limitaciones ----------------------------------
+\section{Limitaciones y consideraciones \'eticas}
+\begin{guia}
+Lista breve y honesta; ya vienen las tres limitaciones estructurales. Agrega las propias de tu an\'alisis (cobertura de datos, segmentos descartados, sensibilidad a par\'ametros).
+\end{guia}
+\begin{itemize}
+  \item \textbf{Datos agregados y falacia ecol\'ogica:} los perfiles describen segmentos, no individuos (Secci\'on~3.6).
+  \item \textbf{Cohortes:} los grupos de edad no siguen a las mismas personas entre elecciones.
+  \item \textbf{Asociaci\'on, no causalidad:} los perfiles describen patrones; las causas de la participaci\'on requieren otros dise\~nos.
+  \item \textbf{Uso responsable:} los perfiles deben orientar apoyo y comunicaci\'on, no estigmatizar territorios ni grupos.
+  \item \pend{Limitaciones propias: sensibilidad al $k$ y a los umbrales, escolaridad no disponible, etc.}
+\end{itemize}
+
+% ------------------------------- 8. Conclusiones ----------------------------------
+\section{Conclusiones y trabajo futuro}
+\begin{guia}
+Tres o cuatro ideas: qu\'e se encontr\'o, qu\'e deber\'ia hacer el INE primero, qu\'e queda por mejorar (p.\,ej. incorporar indicadores socioecon\'omicos territoriales, evaluar las estrategias con pilotos). No introduzcas resultados nuevos.
+\end{guia}
+\pend{Conclusiones (6--8 l\'ineas) y 1--2 l\'ineas de trabajo futuro.}
+
+% ------------------------------- Referencias --------------------------------------
+\begingroup
+\small\singlespacing
+\setlength{\parskip}{2pt}
+\begin{thebibliography}{99}
+\bibitem{ine_ccpc} Instituto Nacional Electoral. \emph{Conteos Censales de Participaci\'on Ciudadana 2009--2024} (plataforma de datos abiertos). \url{https://ine.mx/transparencia/datos-abiertos/visualizacion-datos/conteos-censales-participacion/}
+\bibitem{ine_convocatoria} Instituto Nacional Electoral. \emph{Convocatoria Hackea la Participaci\'on: Datos que construyen democracia} (2026). \url{https://ine.mx/wp-content/uploads/2026/09/Convocatoria_Hackaton.pdf}
+\bibitem{ine_rector} Instituto Nacional Electoral (2024). \emph{Documento rector para la integraci\'on de la base de datos censal de la participaci\'on ciudadana en el Proceso Electoral Federal 2023--2024} (INE/CCOE/023/2024).
+\bibitem{macqueen1967} MacQueen, J. (1967). Some methods for classification and analysis of multivariate observations. \emph{Proc. 5th Berkeley Symposium}, 1, 281--297.
+\bibitem{lloyd1982} Lloyd, S. (1982). Least squares quantization in PCM. \emph{IEEE Trans. Information Theory}, 28(2), 129--137.
+\bibitem{ward1963} Ward, J. H. (1963). Hierarchical grouping to optimize an objective function. \emph{J. American Statistical Association}, 58(301), 236--244.
+\bibitem{schwarz1978} Schwarz, G. (1978). Estimating the dimension of a model. \emph{Annals of Statistics}, 6(2), 461--464.
+\bibitem{rousseeuw1987} Rousseeuw, P. J. (1987). Silhouettes: a graphical aid to the interpretation and validation of cluster analysis. \emph{J. Computational and Applied Mathematics}, 20, 53--65.
+\bibitem{calinski1974} Cali\'nski, T., Harabasz, J. (1974). A dendrite method for cluster analysis. \emph{Communications in Statistics}, 3(1), 1--27.
+\bibitem{davies1979} Davies, D. L., Bouldin, D. W. (1979). A cluster separation measure. \emph{IEEE TPAMI}, 1(2), 224--227.
+\bibitem{hubert1985} Hubert, L., Arabie, P. (1985). Comparing partitions. \emph{J. Classification}, 2, 193--218.
+\bibitem{hennig2007} Hennig, C. (2007). Cluster-wise assessment of cluster stability. \emph{Computational Statistics \& Data Analysis}, 52(1), 258--271.
+\bibitem{robinson1950} Robinson, W. S. (1950). Ecological correlations and the behavior of individuals. \emph{American Sociological Review}, 15(3), 351--357.
+\bibitem{pedregosa2011} Pedregosa, F. et al. (2011). Scikit-learn: machine learning in Python. \emph{J. Machine Learning Research}, 12, 2825--2830.
+\end{thebibliography}
+\endgroup
+
+\begin{guia}[Lista de verificaci\'on antes de entregar]
+\begin{itemize}
+  \item 8 a 12 cuartillas con \verb|\guiafalse|; PDF final; Arial/Calibri 11, interlineado 1.5.
+  \item Entre 4 y 6 perfiles claramente diferenciados, con metodolog\'ia de segmentaci\'on y estrategias por perfil.
+  \item Cero textos en rojo \textcolor{red}{[PENDIENTE]}; nombres de perfiles definitivos; cifras coherentes con las tablas.
+  \item Fichas de perfil (infograf\'ia/dashboard) en PDF/PNG de alta resoluci\'on, aparte de este documento.
+  \item Solo datos agregados; aviso expl\'icito de falacia ecol\'ogica; repositorio accesible.
+  \item Entrega a m\'as tardar el 31 de octubre de 2026, 23:59 h, junto con presentaci\'on (m\'ax.\ 10 diapositivas), c\'odigo, y las cartas de cesi\'on de derechos y de decir verdad firmadas por todas las personas integrantes.
+\end{itemize}
+\end{guia}
+
+\end{document}
