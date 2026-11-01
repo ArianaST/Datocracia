@@ -1,0 +1,25 @@
+cluster,ciclo_vida,n_segmentos,valor_medio,variable_resumida
+0,Adultos (30-50),855,-5.459795900550556,exceso_medio
+0,Jóvenes (18-29),939,-3.969016476429165,exceso_medio
+0,Mayores (67+),368,-4.9819093673158275,exceso_medio
+0,Mediana edad (51-66),99,-13.724997887726017,exceso_medio
+1,Adultos (30-50),699,-2.2832654163057438,exceso_medio
+1,Jóvenes (18-29),358,0.5580362652309605,exceso_medio
+1,Mayores (67+),61,1.9776903131490182,exceso_medio
+1,Mediana edad (51-66),178,-2.459419620572542,exceso_medio
+2,Adultos (30-50),589,2.7144950197204345,exceso_medio
+2,Jóvenes (18-29),331,2.124876911664486,exceso_medio
+2,Mayores (67+),90,-1.2125714214639707,exceso_medio
+2,Mediana edad (51-66),212,-0.1276470629578154,exceso_medio
+3,Adultos (30-50),1081,3.1609535248009455,exceso_medio
+3,Jóvenes (18-29),429,4.230035311572221,exceso_medio
+3,Mayores (67+),251,-2.191922324298523,exceso_medio
+3,Mediana edad (51-66),607,0.34346324626592,exceso_medio
+4,Adultos (30-50),570,2.4363617859426077,exceso_medio
+4,Jóvenes (18-29),281,2.533339803371912,exceso_medio
+4,Mayores (67+),389,-1.0155648168602875,exceso_medio
+4,Mediana edad (51-66),567,-0.3415064531296444,exceso_medio
+5,Adultos (30-50),406,3.017675340542234,exceso_medio
+5,Jóvenes (18-29),62,8.45273042877663,exceso_medio
+5,Mayores (67+),1241,1.6503863945683541,exceso_medio
+5,Mediana edad (51-66),1337,1.380493386479935,exceso_medio

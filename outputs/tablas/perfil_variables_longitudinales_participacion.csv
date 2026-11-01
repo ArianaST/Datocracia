@@ -1,0 +1,37 @@
+cluster,variable,valor,uso,unidad,etiqueta
+0,participacion_media,41.639714650999565,clustering,%,Participación media
+1,participacion_media,52.51779969303056,clustering,%,Participación media
+2,participacion_media,54.665736808894714,clustering,%,Participación media
+3,participacion_media,58.20028692056655,clustering,%,Participación media
+4,participacion_media,59.610323343363135,clustering,%,Participación media
+5,participacion_media,66.93763862746539,clustering,%,Participación media
+0,brecha_presidencial_intermedia,14.56993028140302,clustering,pp,Brecha presidencial–intermedia
+1,brecha_presidencial_intermedia,22.469487495016697,clustering,pp,Brecha presidencial–intermedia
+2,brecha_presidencial_intermedia,10.605919355831526,clustering,pp,Brecha presidencial–intermedia
+3,brecha_presidencial_intermedia,5.671932763350696,clustering,pp,Brecha presidencial–intermedia
+4,brecha_presidencial_intermedia,16.292250077692408,clustering,pp,Brecha presidencial–intermedia
+5,brecha_presidencial_intermedia,12.000968723496944,clustering,pp,Brecha presidencial–intermedia
+0,cambio_reciente,0.07784819112580772,clustering,pp/año,Cambio reciente
+1,cambio_reciente,0.21425663753220642,clustering,pp/año,Cambio reciente
+2,cambio_reciente,-0.6979011357095247,clustering,pp/año,Cambio reciente
+3,cambio_reciente,-0.7256832425044945,clustering,pp/año,Cambio reciente
+4,cambio_reciente,1.3401417219879024,clustering,pp/año,Cambio reciente
+5,cambio_reciente,0.47035484090613044,clustering,pp/año,Cambio reciente
+0,irregularidad_trayectoria,2.9990923673084624,clustering,pp,Irregularidad de trayectoria
+1,irregularidad_trayectoria,2.685076160119253,clustering,pp,Irregularidad de trayectoria
+2,irregularidad_trayectoria,6.7166705678332495,clustering,pp,Irregularidad de trayectoria
+3,irregularidad_trayectoria,2.155121000341635,clustering,pp,Irregularidad de trayectoria
+4,irregularidad_trayectoria,5.3060318396712285,clustering,pp,Irregularidad de trayectoria
+5,irregularidad_trayectoria,2.3247333934321093,clustering,pp,Irregularidad de trayectoria
+0,tendencia_general,-0.014218243739002975,diagnostico,pp/año,Tendencia general
+1,tendencia_general,0.18769356119169936,diagnostico,pp/año,Tendencia general
+2,tendencia_general,0.4071646444340154,diagnostico,pp/año,Tendencia general
+3,tendencia_general,-0.46615738486910846,diagnostico,pp/año,Tendencia general
+4,tendencia_general,0.8452003871285143,diagnostico,pp/año,Tendencia general
+5,tendencia_general,0.3153578976965162,diagnostico,pp/año,Tendencia general
+0,exceso_medio,-4.929623044103769,diagnostico,pp,Exceso medio respecto a edad y sexo
+1,exceso_medio,-1.2303825027226856,diagnostico,pp,Exceso medio respecto a edad y sexo
+2,exceso_medio,1.8159981684919715,diagnostico,pp,Exceso medio respecto a edad y sexo
+3,exceso_medio,2.398407573103498,diagnostico,pp,Exceso medio respecto a edad y sexo
+4,exceso_medio,1.0588942591387394,diagnostico,pp,Exceso medio respecto a edad y sexo
+5,exceso_medio,2.0265439768130005,diagnostico,pp,Exceso medio respecto a edad y sexo

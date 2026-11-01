@@ -1,0 +1,2 @@
+candidato,k,algoritmo,escala,ponderado,features_set,n_grupos_observados,tam_min_pct,inercia,convergio,silueta,silueta_referencia,calinski_harabasz,davies_bouldin,ari_estabilidad_entidad,ari_desv_entidad,jaccard_minimo_entidad,repeticiones_validas_entidad
+km_participacion,6,kmeans,standard,True,participacion,6,10.183333333333334,19006.4143180113,True,0.23821328645602224,0.23821328645602224,3696.7742170108945,1.2323751226365154,0.6983577203558654,0.11664962241964125,0.6898004748208274,20.0
