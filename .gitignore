@@ -1,0 +1,23 @@
+# Archivos de entorno y variables
+.env
+.env.*
+
+# Entornos virtuales
+.venv/
+venv/
+ENV/
+
+# Archivos temporales de Python
+__pycache__/
+*.pyc
+
+# Archivos pesados o temporales (si no requieres subir datos/outputs pesados)
+# outputs/
+# data/
+.ipynb_checkpoints/
+*.en_proceso.ipynb
+*.en_proceso.csv.gz
+
+
+/data/processed/
+/data/raw/
